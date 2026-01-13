@@ -1,0 +1,116 @@
+from __future__ import annotations
+
+from datetime import date
+
+import streamlit as st
+
+from app.navigation import render_nav
+from app.state import ensure_review_state, ensure_state, save_progress_state
+from app.ui import apply_theme
+from config import EXTRA_CARDS_PER_SESSION, NEW_CARDS_PER_SESSION
+from core.metrics import due_words
+from core.scheduler import schedule_review
+
+
+st.set_page_config(page_title="Study", layout="wide")
+apply_theme()
+render_nav()
+ensure_state()
+
+st.title("Study Session")
+
+entries = st.session_state.entries
+sets = st.session_state.sets
+active_set = st.session_state.active_set
+
+if not entries:
+    st.info("No entries loaded yet. Rebuild the dataset on Home.")
+    st.stop()
+
+word_list = sets[active_set].word_keys if active_set in sets else []
+
+if "study_queue" not in st.session_state:
+    st.session_state.study_queue = []
+
+if st.button("Start Session"):
+    due = due_words(word_list, st.session_state.progress)
+    new_words = [word for word in word_list if word.lower() not in st.session_state.progress]
+    extra = [word for word in word_list if word not in due and word not in new_words]
+
+    queue = []
+    queue.extend(due)
+    queue.extend(new_words[:NEW_CARDS_PER_SESSION])
+    queue.extend(extra[:EXTRA_CARDS_PER_SESSION])
+    st.session_state.study_queue = queue
+
+queue = st.session_state.study_queue
+
+if not queue:
+    st.info("Start a session to begin reviewing cards.")
+    st.stop()
+
+current_word = queue[0]
+entry = next((item for item in entries if item.word.lower() == current_word.lower()), None)
+if entry is None:
+    st.warning("Word not found in dataset.")
+    st.stop()
+
+st.markdown("<div class='card'>", unsafe_allow_html=True)
+st.markdown(f"<div class='word-title'>{entry.word}</div>", unsafe_allow_html=True)
+
+pos_display = entry.pos or ""
+if pos_display:
+    st.markdown(f"<span class='badge'>{pos_display}</span>", unsafe_allow_html=True)
+
+st.markdown("<hr>", unsafe_allow_html=True)
+
+st.markdown("**Meaning**")
+st.write(entry.meaning or "—")
+
+st.markdown("**Example**")
+st.write(entry.example or "—")
+
+st.markdown("**Synonyms**")
+if entry.synonyms:
+    st.write(", ".join(entry.synonyms[:3]))
+else:
+    st.write("—")
+
+st.markdown("**Mnemonics**")
+if entry.mnemonics:
+    st.write("; ".join(entry.mnemonics[:2]))
+else:
+    st.write("—")
+
+st.markdown("**Source**")
+source_lines = []
+for source in entry.sources:
+    label = f"{source.filename} / {source.sheet}"
+    if source.subcategory:
+        label += f" / {source.subcategory}"
+    source_lines.append(label)
+st.write("; ".join(source_lines) if source_lines else "—")
+
+st.markdown("</div>", unsafe_allow_html=True)
+
+st.markdown("---")
+
+col1, col2, col3, col4 = st.columns(4)
+
+rating = None
+if col1.button("Again"):
+    rating = "again"
+if col2.button("Hard"):
+    rating = "hard"
+if col3.button("Good"):
+    rating = "good"
+if col4.button("Easy"):
+    rating = "easy"
+
+if rating:
+    state = ensure_review_state(entry.word)
+    st.session_state.progress[entry.word.lower()] = schedule_review(state, rating)
+    st.session_state.study_queue = queue[1:]
+    st.session_state.stats["last_review_date"] = date.today().isoformat()
+    save_progress_state()
+    st.rerun()
