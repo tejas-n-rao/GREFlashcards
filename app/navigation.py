@@ -19,6 +19,13 @@ def _nav_buttons() -> None:
 
 def render_nav() -> None:
     with st.sidebar:
-        st.header("GRE Vocab Studio")
-        st.caption("Aesthetic, offline-first flashcards")
+        st.markdown(
+            """
+            <div class="sidebar-card">
+              <div class="sidebar-title">GRE Vocab Studio</div>
+              <p class="sidebar-caption">Immersive, offline-first flashcards</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
         _nav_buttons()

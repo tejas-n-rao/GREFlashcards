@@ -25,7 +25,19 @@ apply_theme()
 render_nav()
 ensure_state()
 
-st.title("Settings")
+st.markdown(
+    """
+    <div class="hero">
+      <div class="hero-title">Settings</div>
+      <div class="hero-subtitle">Control sources, active sets, and enrichment limits.</div>
+      <div class="hero-tags">
+        <span class="pill">Config</span>
+        <span class="pill">Session</span>
+      </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 set_map = st.session_state.sets
 set_names = list(set_map.keys())
@@ -57,6 +69,7 @@ for name in set_names:
     source_map.setdefault(source, []).append(name)
 
 sources = sorted(source_map.keys(), key=lambda s: (0, s) if s != "Pooled" else (1, s))
+st.markdown("<div class='glass'>", unsafe_allow_html=True)
 source_choice = st.selectbox("Source", options=sources)
 set_names = sorted(source_map[source_choice], key=_set_sort_key)
 
@@ -74,9 +87,11 @@ active = st.selectbox(
 )
 
 st.session_state.active_set = active
+st.markdown("</div>", unsafe_allow_html=True)
 
-st.markdown("---")
+st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 
+st.markdown("<div class='card'>", unsafe_allow_html=True)
 st.subheader("Enrichment Options")
 if not ENABLE_OPENAI_ENRICHMENT:
     st.info("OpenAI enrichment is disabled in config.py.")
@@ -103,3 +118,4 @@ st.session_state.max_calls_per_run = st.number_input(
 if st.button("Save Settings"):
     save_progress_state()
     st.success("Settings saved.")
+st.markdown("</div>", unsafe_allow_html=True)

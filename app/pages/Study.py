@@ -23,7 +23,19 @@ apply_theme()
 render_nav()
 ensure_state()
 
-st.title("Study Session")
+st.markdown(
+    """
+    <div class="hero">
+      <div class="hero-title">Study Session</div>
+      <div class="hero-subtitle">Focus on the words that matter most right now.</div>
+      <div class="hero-tags">
+        <span class="pill">Daily review</span>
+        <span class="pill">Adaptive queue</span>
+      </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 entries = st.session_state.entries
 sets = st.session_state.sets
@@ -62,6 +74,7 @@ for name in set_names:
     source_map.setdefault(source, []).append(name)
 
 sources = sorted(source_map.keys(), key=lambda s: (0, s) if s != "Pooled" else (1, s))
+st.markdown("<div class='glass'>", unsafe_allow_html=True)
 source_choice = st.selectbox("Source", options=sources)
 sets_for_source = sorted(source_map[source_choice], key=_set_sort_key)
 
@@ -73,6 +86,7 @@ active_set = st.selectbox(
     else 0,
 )
 st.session_state.active_set = active_set
+st.markdown("</div>", unsafe_allow_html=True)
 
 word_list = sets[active_set].word_keys if active_set in sets else []
 
@@ -102,14 +116,14 @@ if entry is None:
     st.warning("Word not found in dataset.")
     st.stop()
 
-st.markdown("<div class='card'>", unsafe_allow_html=True)
+st.markdown("<div class='card flashcard'>", unsafe_allow_html=True)
 st.markdown(f"<div class='word-title'>{entry.word}</div>", unsafe_allow_html=True)
 
 pos_display = entry.pos or ""
 if pos_display:
     st.markdown(f"<span class='badge'>{pos_display}</span>", unsafe_allow_html=True)
 
-st.markdown("<hr>", unsafe_allow_html=True)
+st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 
 st.markdown("<div class='section-title'>Meaning</div>", unsafe_allow_html=True)
 st.write(entry.meaning or "—")
@@ -140,8 +154,9 @@ st.write("; ".join(source_lines) if source_lines else "—")
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-st.markdown("---")
+st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 
+st.markdown("<div class='card'>", unsafe_allow_html=True)
 col1, col2, col3, col4 = st.columns(4)
 
 rating = None
@@ -161,3 +176,4 @@ if rating:
     st.session_state.stats["last_review_date"] = date.today().isoformat()
     save_progress_state()
     st.rerun()
+st.markdown("</div>", unsafe_allow_html=True)

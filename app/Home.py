@@ -22,11 +22,50 @@ apply_theme()
 render_nav()
 ensure_state()
 
-st.title("GRE Vocab Studio")
-st.subheader("Normalization and Dataset Summary")
+report = st.session_state.report or {}
+entries = st.session_state.entries
+
+st.markdown(
+    """
+    <div class="hero">
+      <div class="hero-title">GRE Vocab Studio</div>
+      <div class="hero-subtitle">Curate, enrich, and rehearse vocabulary with precision.</div>
+      <div class="hero-tags">
+        <span class="pill">Dark Purple</span>
+        <span class="pill">Offline-first</span>
+        <span class="pill">Spaced repetition</span>
+      </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+def _stat_card(label: str, value: str) -> str:
+    return (
+        "<div class='stat-card'>"
+        f"<div class='stat-label'>{label}</div>"
+        f"<div class='stat-value'>{value}</div>"
+        "</div>"
+    )
+
+total_rows = report.get("total_rows", 0)
+total_words = report.get("total_words", len(entries))
+deduped_words = report.get("deduped_words", len(entries))
+missing_meaning = report.get("missing_meaning", 0)
+
+stat_html = "".join(
+    [
+        _stat_card("Total rows", f"{total_rows:,}"),
+        _stat_card("Unique words", f"{deduped_words:,}"),
+        _stat_card("Source words", f"{total_words:,}"),
+        _stat_card("Missing meaning", f"{missing_meaning:,}"),
+    ]
+)
+st.markdown(f"<div class='stat-grid'>{stat_html}</div>", unsafe_allow_html=True)
 
 col_a, col_b = st.columns([1, 2])
 with col_a:
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
     st.markdown("### Data Sources")
     for path in EXCEL_FILES:
         st.write(f"- {path}")
@@ -34,9 +73,10 @@ with col_a:
     if st.button("Rebuild Dataset"):
         rebuild_dataset()
         st.success("Dataset rebuilt from Excel sources.")
+    st.markdown("</div>", unsafe_allow_html=True)
 
 with col_b:
-    report = st.session_state.report or {}
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
     st.markdown("### Normalization Report")
     st.json(report)
     missing_files = report.get("missing_files", [])
@@ -44,9 +84,11 @@ with col_b:
         st.warning("Some Excel files were not found. Check config.py paths.")
         for path in missing_files:
             st.code(path)
+    st.markdown("</div>", unsafe_allow_html=True)
 
-st.markdown("---")
+st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 
+st.markdown("<div class='card'>", unsafe_allow_html=True)
 st.markdown("### Enrichment")
 col_c, col_d = st.columns([2, 1])
 with col_c:
@@ -66,8 +108,11 @@ with col_d:
         st.session_state.sets = build_sets(st.session_state.entries)
         save_normalized_state()
         st.success("Enrichment complete.")
+st.markdown("</div>", unsafe_allow_html=True)
 
-st.markdown("---")
+st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 
+st.markdown("<div class='card'>", unsafe_allow_html=True)
 st.markdown("### Next Steps")
 st.info("Go to Study to start reviewing cards or use Dashboard to explore stats and search.")
+st.markdown("</div>", unsafe_allow_html=True)

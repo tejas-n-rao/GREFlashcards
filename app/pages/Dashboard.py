@@ -25,7 +25,20 @@ entries = st.session_state.entries
 sets = st.session_state.sets
 active_set = st.session_state.active_set
 
-st.title("Dashboard")
+st.markdown(
+    """
+    <div class="hero">
+      <div class="hero-title">Dashboard</div>
+      <div class="hero-subtitle">Your pulse check on recall, due cards, and weak spots.</div>
+      <div class="hero-tags">
+        <span class="pill">Live metrics</span>
+        <span class="pill">Accuracy</span>
+        <span class="pill">Search</span>
+      </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 if not entries:
     st.info("No entries loaded yet. Rebuild the dataset on Home.")
@@ -34,19 +47,24 @@ if not entries:
 active_words = sets[active_set].word_keys if active_set in sets else []
 pooled_words = sets["Pooled"].word_keys if "Pooled" in sets else []
 
-col_a, col_b, col_c = st.columns(3)
-with col_a:
-    st.metric("Due (Active Set)", len(due_words(active_words, st.session_state.progress)))
-with col_b:
-    st.metric("Due (Pooled)", len(due_words(pooled_words, st.session_state.progress)))
-with col_c:
-    accuracy = accuracy_for_words(pooled_words, st.session_state.progress)
-    st.metric("Overall Accuracy", f"{accuracy:.0%}")
+accuracy = accuracy_for_words(pooled_words, st.session_state.progress)
+stat_html = "".join(
+    [
+        f"<div class='stat-card'><div class='stat-label'>Due (Active Set)</div>"
+        f"<div class='stat-value'>{len(due_words(active_words, st.session_state.progress))}</div></div>",
+        f"<div class='stat-card'><div class='stat-label'>Due (Pooled)</div>"
+        f"<div class='stat-value'>{len(due_words(pooled_words, st.session_state.progress))}</div></div>",
+        f"<div class='stat-card'><div class='stat-label'>Overall Accuracy</div>"
+        f"<div class='stat-value'>{accuracy:.0%}</div></div>",
+    ]
+)
+st.markdown(f"<div class='stat-grid'>{stat_html}</div>", unsafe_allow_html=True)
 
-st.markdown("---")
+st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 
 col_d, col_e = st.columns([2, 1])
 with col_d:
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
     st.subheader("Weak Words")
     weak_list = weak_words(entries, st.session_state.progress, limit=10)
     if not weak_list:
@@ -54,8 +72,10 @@ with col_d:
     else:
         for word, acc in weak_list:
             st.write(f"{word} — {acc:.0%} accuracy")
+    st.markdown("</div>", unsafe_allow_html=True)
 
 with col_e:
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
     st.subheader("Search")
     query = st.text_input("Search word")
     if query:
@@ -66,9 +86,11 @@ with col_e:
             st.success("Word found. Open Word Detail.")
         else:
             st.warning("No match found.")
+    st.markdown("</div>", unsafe_allow_html=True)
 
-st.markdown("---")
+st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 
+st.markdown("<div class='card'>", unsafe_allow_html=True)
 st.subheader("Set Accuracy")
 set_names = list(sets.keys())
 file_sets = [name for name in set_names if " :: " not in name and name != "Pooled"]
@@ -91,3 +113,4 @@ st.dataframe(_table(chunk_sets), use_container_width=True)
 
 st.markdown("**Pooled Chunks**")
 st.dataframe(_table(pooled_sets), use_container_width=True)
+st.markdown("</div>", unsafe_allow_html=True)

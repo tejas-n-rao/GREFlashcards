@@ -32,7 +32,19 @@ ensure_state()
 entries = st.session_state.entries
 index = entry_map(entries)
 
-st.title("Word Detail")
+st.markdown(
+    """
+    <div class="hero">
+      <div class="hero-title">Word Detail</div>
+      <div class="hero-subtitle">Refine definitions, examples, and tags with care.</div>
+      <div class="hero-tags">
+        <span class="pill">Edit</span>
+        <span class="pill">Enrichment</span>
+      </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 if not entries:
     st.info("No entries loaded yet. Rebuild the dataset on Home.")
@@ -48,25 +60,32 @@ if selected:
         lower_map = {value.lower(): idx for idx, value in enumerate(options)}
         default_index = lower_map.get(selected.lower(), 0)
 
+st.markdown("<div class='glass'>", unsafe_allow_html=True)
 word = st.selectbox("Select word", options=options, index=default_index)
+st.markdown("</div>", unsafe_allow_html=True)
 entry = index.get(word.lower())
 if not entry:
     st.warning("Word not found.")
     st.stop()
 
-st.markdown("---")
+st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 
 col_a, col_b = st.columns(2)
 with col_a:
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
     meaning = st.text_area("Meaning", value=entry.meaning or "")
     example = st.text_area("Example", value=entry.example or "")
     pos = st.text_input("Part of Speech", value=entry.pos or "")
+    st.markdown("</div>", unsafe_allow_html=True)
 
 with col_b:
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
     synonyms = st.text_input("Synonyms (comma-separated)", value=", ".join(entry.synonyms))
     mnemonics = st.text_area("Mnemonics (1-2, separated by newlines)", value="\n".join(entry.mnemonics))
     tags = st.text_input("Tags (comma-separated)", value=", ".join(entry.tags))
+    st.markdown("</div>", unsafe_allow_html=True)
 
+st.markdown("<div class='card'>", unsafe_allow_html=True)
 st.markdown("### Sources")
 source_lines = []
 for source in entry.sources:
@@ -76,6 +95,7 @@ for source in entry.sources:
     source_lines.append(label)
 
 st.write("; ".join(source_lines) if source_lines else "—")
+st.markdown("</div>", unsafe_allow_html=True)
 
 if st.button("Save Changes"):
     entry.meaning = meaning.strip() or None
