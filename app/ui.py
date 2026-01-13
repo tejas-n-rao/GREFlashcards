@@ -201,17 +201,31 @@ div[data-baseweb="select"] > div {
 }
 
 .flashcard {
-  padding: 1.15rem 1.3rem;
+  padding: 1rem 1.1rem;
 }
 
-.flashcard p,
-.flashcard li {
-  font-size: 1.05rem;
-  line-height: 1.6;
+.flash-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.8rem;
 }
 
-.flashcard .section-title {
-  margin-top: 0.85rem;
+.flash-item {
+  background: rgba(20, 10, 38, 0.7);
+  border-radius: 14px;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgba(164, 120, 255, 0.25);
+}
+
+.flash-item p {
+  margin: 0.2rem 0 0;
+  font-size: 1.25rem;
+  line-height: 1.7;
+}
+
+.flash-item .section-title {
+  margin-top: 0;
+  font-size: 0.7rem;
 }
 
 .badge {
@@ -241,7 +255,7 @@ div[data-baseweb="select"] > div {
 .divider {
   height: 1px;
   background: linear-gradient(90deg, rgba(176, 124, 255, 0.1), rgba(176, 124, 255, 0.6), rgba(176, 124, 255, 0.1));
-  margin: 1.6rem 0;
+  margin: 1.1rem 0;
 }
 
 .glass {
@@ -249,6 +263,122 @@ div[data-baseweb="select"] > div {
   border-radius: 20px;
   padding: 1.5rem;
   border: 1px solid rgba(139, 95, 255, 0.25);
+}
+
+.master-bar {
+  background: rgba(12, 6, 22, 0.7);
+  border-radius: 999px;
+  border: 1px solid rgba(166, 126, 255, 0.35);
+  overflow: hidden;
+  height: 22px;
+  display: flex;
+  box-shadow: inset 0 0 12px rgba(10, 4, 22, 0.6);
+}
+
+.bar-segment {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #0b0615;
+  white-space: nowrap;
+}
+
+.bar-green {
+  background: linear-gradient(90deg, #5cffb3, #33d17a);
+}
+
+.bar-red {
+  background: linear-gradient(90deg, #ff7a7a, #ff4d6d);
+}
+
+.bar-white {
+  background: linear-gradient(90deg, #f7f2ff, #e7ddff);
+}
+
+.bar-caption {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.shortcut-legend {
+  position: fixed;
+  bottom: 24px;
+  right: 28px;
+  z-index: 9999;
+}
+
+.shortcut-legend summary {
+  list-style: none;
+  cursor: pointer;
+  background: rgba(14, 7, 28, 0.9);
+  border: 1px solid rgba(160, 120, 255, 0.35);
+  border-radius: 12px;
+  padding: 0.45rem 0.6rem;
+  box-shadow: 0 16px 30px rgba(12, 5, 26, 0.6);
+  color: var(--ink);
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.shortcut-legend summary::-webkit-details-marker {
+  display: none;
+}
+
+.shortcut-panel {
+  margin-top: 0.6rem;
+  background: rgba(14, 7, 28, 0.9);
+  border: 1px solid rgba(160, 120, 255, 0.35);
+  border-radius: 16px;
+  padding: 0.75rem 0.9rem;
+  box-shadow: 0 16px 30px rgba(12, 5, 26, 0.6);
+  font-size: 0.8rem;
+  color: var(--ink);
+}
+
+.shortcut-panel h4 {
+  margin: 0 0 0.4rem 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.shortcut-panel .row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-top: 0.2rem;
+}
+
+.shortcut-key {
+  display: inline-block;
+  min-width: 22px;
+  text-align: center;
+  padding: 0.1rem 0.35rem;
+  border-radius: 6px;
+  background: rgba(176, 124, 255, 0.2);
+  border: 1px solid rgba(176, 124, 255, 0.35);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.flash-note {
+  margin-top: 0.8rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 12px;
+  background: rgba(18, 10, 34, 0.55);
+  border: 1px solid rgba(152, 112, 230, 0.25);
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
 div[data-testid="stMetric"] {

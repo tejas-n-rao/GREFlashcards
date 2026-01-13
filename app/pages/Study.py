@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 from datetime import date
+import html
+import random
 import sys
 from pathlib import Path
 
 import streamlit as st
+import streamlit.components.v1 as components
 
 path = Path(__file__).resolve()
 repo_root = path.parents[2] if path.parent.name == "pages" else path.parents[1]
@@ -74,7 +77,8 @@ for name in set_names:
     source_map.setdefault(source, []).append(name)
 
 sources = sorted(source_map.keys(), key=lambda s: (0, s) if s != "Pooled" else (1, s))
-st.markdown("<div class='glass'>", unsafe_allow_html=True)
+if "shuffle_sets" not in st.session_state:
+    st.session_state.shuffle_sets = False
 source_choice = st.selectbox("Source", options=sources)
 sets_for_source = sorted(source_map[source_choice], key=_set_sort_key)
 
@@ -86,17 +90,73 @@ active_set = st.selectbox(
     else 0,
 )
 st.session_state.active_set = active_set
-st.markdown("</div>", unsafe_allow_html=True)
 
 word_list = sets[active_set].word_keys if active_set in sets else []
 
 if "study_queue" not in st.session_state:
     st.session_state.study_queue = []
 
-if st.button("Start Session"):
-    due = due_words(word_list, st.session_state.progress)
-    new_words = [word for word in word_list if word.lower() not in st.session_state.progress]
-    extra = [word for word in word_list if word not in due and word not in new_words]
+total_cards = len(word_list)
+correct_cards = 0
+wrong_cards = 0
+remaining_cards = 0
+for word in word_list:
+    state = st.session_state.progress.get(word.lower())
+    if not state or state.review_count == 0:
+        remaining_cards += 1
+        continue
+    if state.correct_count >= state.incorrect_count:
+        correct_cards += 1
+    else:
+        wrong_cards += 1
+
+def _percent(value: int, total: int) -> int:
+    if total == 0:
+        return 0
+    return int(round((value / total) * 100))
+
+correct_pct = _percent(correct_cards, total_cards)
+wrong_pct = _percent(wrong_cards, total_cards)
+remaining_pct = max(0, 100 - correct_pct - wrong_pct)
+
+st.markdown("### Set Progress")
+bar_html = (
+    "<div class='master-bar'>"
+    f"<div class='bar-segment bar-green' style='width:{correct_pct}%;'>{correct_pct}%</div>"
+    f"<div class='bar-segment bar-red' style='width:{wrong_pct}%;'>{wrong_pct}%</div>"
+    f"<div class='bar-segment bar-white' style='width:{remaining_pct}%;'>{remaining_pct}%</div>"
+    "</div>"
+)
+st.markdown(bar_html, unsafe_allow_html=True)
+st.markdown(
+    f"<div class='bar-caption'>"
+    f"<span>Right: {correct_cards}</span>"
+    f"<span>Wrong: {wrong_cards}</span>"
+    f"<span>Unseen: {remaining_cards}</span>"
+    f"<span>Total: {total_cards}</span>"
+    f"</div>",
+    unsafe_allow_html=True,
+)
+st.session_state.shuffle_sets = st.checkbox(
+    "Shuffle fixed sets for this session",
+    value=st.session_state.shuffle_sets,
+)
+
+confirm_reset = st.checkbox("Confirm reset progress for this set", value=False)
+if st.button("Reset progress for this set", use_container_width=True, disabled=not confirm_reset):
+    for word in word_list:
+        st.session_state.progress.pop(word.lower(), None)
+    st.session_state.study_queue = []
+    save_progress_state()
+    st.success("Progress reset for this set.")
+
+if st.button("Start Session", use_container_width=True):
+    set_words = list(word_list)
+    if st.session_state.shuffle_sets and not active_set.startswith("Pooled"):
+        random.shuffle(set_words)
+    due = due_words(set_words, st.session_state.progress)
+    new_words = [word for word in set_words if word.lower() not in st.session_state.progress]
+    extra = [word for word in set_words if word not in due and word not in new_words]
 
     queue = []
     queue.extend(due)
@@ -117,40 +177,44 @@ if entry is None:
     st.stop()
 
 st.markdown("<div class='card flashcard'>", unsafe_allow_html=True)
-st.markdown(f"<div class='word-title'>{entry.word}</div>", unsafe_allow_html=True)
+st.markdown(f"<div class='word-title'>{html.escape(entry.word)}</div>", unsafe_allow_html=True)
 
 pos_display = entry.pos or ""
 if pos_display:
-    st.markdown(f"<span class='badge'>{pos_display}</span>", unsafe_allow_html=True)
+    st.markdown(f"<span class='badge'>{html.escape(pos_display)}</span>", unsafe_allow_html=True)
 
 st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 
-st.markdown("<div class='section-title'>Meaning</div>", unsafe_allow_html=True)
-st.write(entry.meaning or "—")
-
-st.markdown("<div class='section-title'>Example</div>", unsafe_allow_html=True)
-st.write(entry.example or "—")
-
-st.markdown("<div class='section-title'>Synonyms</div>", unsafe_allow_html=True)
-if entry.synonyms:
-    st.write(", ".join(entry.synonyms[:3]))
-else:
-    st.write("—")
-
-st.markdown("<div class='section-title'>Mnemonics</div>", unsafe_allow_html=True)
-if entry.mnemonics:
-    st.write("; ".join(entry.mnemonics[:2]))
-else:
-    st.write("—")
-
-st.markdown("<div class='section-title'>Source</div>", unsafe_allow_html=True)
 source_lines = []
 for source in entry.sources:
     label = f"{source.filename} / {source.sheet}"
     if source.subcategory:
         label += f" / {source.subcategory}"
     source_lines.append(label)
-st.write("; ".join(source_lines) if source_lines else "—")
+
+def _flash_item(title: str, body: str) -> str:
+    safe_body = html.escape(body) if body else "—"
+    return (
+        "<div class='flash-item'>"
+        f"<div class='section-title'>{html.escape(title)}</div>"
+        f"<p>{safe_body}</p>"
+        "</div>"
+    )
+
+flash_html = "".join(
+    [
+        _flash_item("Meaning", entry.meaning or ""),
+        _flash_item("Example", entry.example or ""),
+        _flash_item("Synonyms", ", ".join(entry.synonyms[:3]) if entry.synonyms else ""),
+        _flash_item("Mnemonics", "; ".join(entry.mnemonics[:2]) if entry.mnemonics else ""),
+    ]
+)
+st.markdown(f"<div class='flash-grid'>{flash_html}</div>", unsafe_allow_html=True)
+source_note = html.escape("; ".join(source_lines) if source_lines else "—")
+st.markdown(
+    f"<div class='flash-note'><span class='section-title'>Source</span> {source_note}</div>",
+    unsafe_allow_html=True,
+)
 
 st.markdown("</div>", unsafe_allow_html=True)
 
@@ -160,13 +224,13 @@ st.markdown("<div class='card'>", unsafe_allow_html=True)
 col1, col2, col3, col4 = st.columns(4)
 
 rating = None
-if col1.button("Again"):
+if col1.button("Again", use_container_width=True):
     rating = "again"
-if col2.button("Hard"):
+if col2.button("Hard", use_container_width=True):
     rating = "hard"
-if col3.button("Good"):
+if col3.button("Good", use_container_width=True):
     rating = "good"
-if col4.button("Easy"):
+if col4.button("Easy", use_container_width=True):
     rating = "easy"
 
 if rating:
@@ -177,3 +241,57 @@ if rating:
     save_progress_state()
     st.rerun()
 st.markdown("</div>", unsafe_allow_html=True)
+
+components.html(
+    """
+    <script>
+      (function () {
+        if (window.__greShortcutsInstalled) return;
+        window.__greShortcutsInstalled = true;
+        const keyMap = {
+          "a": "Again",
+          "h": "Hard",
+          "g": "Good",
+          "e": "Easy",
+          "s": "Start Session"
+        };
+        const handler = (event) => {
+          const tag = (event.target && event.target.tagName) ? event.target.tagName.toLowerCase() : "";
+          if (tag === "input" || tag === "textarea" || tag === "select" || event.target.isContentEditable) {
+            return;
+          }
+          const key = event.key.toLowerCase();
+          if (!keyMap[key]) return;
+          const doc = window.parent ? window.parent.document : document;
+          const buttons = Array.from(doc.querySelectorAll("button"));
+          const target = buttons.find(btn => btn.innerText.trim() === keyMap[key]);
+          if (target) {
+            target.click();
+          }
+        };
+        document.addEventListener("keydown", handler);
+        if (window.parent && window.parent.document) {
+          window.parent.document.addEventListener("keydown", handler);
+        }
+      })();
+    </script>
+    """,
+    height=0,
+)
+
+st.markdown(
+    """
+    <details class="shortcut-legend">
+      <summary>⌨</summary>
+      <div class="shortcut-panel">
+        <h4>Shortcuts</h4>
+        <div class="row"><span class="shortcut-key">A</span><span>Again</span></div>
+        <div class="row"><span class="shortcut-key">H</span><span>Hard</span></div>
+        <div class="row"><span class="shortcut-key">G</span><span>Good</span></div>
+        <div class="row"><span class="shortcut-key">E</span><span>Easy</span></div>
+        <div class="row"><span class="shortcut-key">S</span><span>Start Session</span></div>
+      </div>
+    </details>
+    """,
+    unsafe_allow_html=True,
+)

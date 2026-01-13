@@ -33,30 +33,8 @@
       "correct_count": 1,
       "incorrect_count": 0
     },
-    "abstruse": {
-      "word": "abstruse",
-      "due_date": "2026-01-15",
-      "interval_days": 2,
-      "ease_factor": 2.5,
-      "last_review": "2026-01-13",
-      "review_count": 1,
-      "lapse_count": 0,
-      "correct_count": 1,
-      "incorrect_count": 0
-    },
     "inkling": {
       "word": "inkling",
-      "due_date": "2026-01-15",
-      "interval_days": 2,
-      "ease_factor": 2.5,
-      "last_review": "2026-01-13",
-      "review_count": 1,
-      "lapse_count": 0,
-      "correct_count": 1,
-      "incorrect_count": 0
-    },
-    "byzantine": {
-      "word": "byzantine",
       "due_date": "2026-01-15",
       "interval_days": 2,
       "ease_factor": 2.5,
@@ -274,6 +252,226 @@
       "lapse_count": 0,
       "correct_count": 1,
       "incorrect_count": 0
+    },
+    "baleful": {
+      "word": "baleful",
+      "due_date": "2026-01-15",
+      "interval_days": 2,
+      "ease_factor": 2.5,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "irascible": {
+      "word": "irascible",
+      "due_date": "2026-01-15",
+      "interval_days": 2,
+      "ease_factor": 2.5,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "flippant": {
+      "word": "flippant",
+      "due_date": "2026-01-15",
+      "interval_days": 2,
+      "ease_factor": 2.5,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "inveterate": {
+      "word": "inveterate",
+      "due_date": "2026-01-15",
+      "interval_days": 2,
+      "ease_factor": 2.5,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "uncanny": {
+      "word": "uncanny",
+      "due_date": "2026-01-15",
+      "interval_days": 2,
+      "ease_factor": 2.5,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "bowdlerize": {
+      "word": "bowdlerize",
+      "due_date": "2026-01-14",
+      "interval_days": 1,
+      "ease_factor": 2.35,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 0,
+      "incorrect_count": 1
+    },
+    "amalgam": {
+      "word": "amalgam",
+      "due_date": "2026-01-14",
+      "interval_days": 1,
+      "ease_factor": 2.3,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 1,
+      "correct_count": 0,
+      "incorrect_count": 1
+    },
+    "entice": {
+      "word": "entice",
+      "due_date": "2026-01-14",
+      "interval_days": 1,
+      "ease_factor": 2.3,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 1,
+      "correct_count": 0,
+      "incorrect_count": 1
+    },
+    "guileless": {
+      "word": "guileless",
+      "due_date": "2026-01-15",
+      "interval_days": 2,
+      "ease_factor": 2.5,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "gauche": {
+      "word": "gauche",
+      "due_date": "2026-01-15",
+      "interval_days": 2,
+      "ease_factor": 2.5,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "rash": {
+      "word": "rash",
+      "due_date": "2026-01-17",
+      "interval_days": 4,
+      "ease_factor": 2.65,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "remonstrate": {
+      "word": "remonstrate",
+      "due_date": "2026-01-17",
+      "interval_days": 4,
+      "ease_factor": 2.65,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "raft": {
+      "word": "raft",
+      "due_date": "2026-01-17",
+      "interval_days": 4,
+      "ease_factor": 2.65,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "impute": {
+      "word": "impute",
+      "due_date": "2026-01-17",
+      "interval_days": 4,
+      "ease_factor": 2.65,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "enormity": {
+      "word": "enormity",
+      "due_date": "2026-01-17",
+      "interval_days": 4,
+      "ease_factor": 2.65,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "broadside": {
+      "word": "broadside",
+      "due_date": "2026-01-14",
+      "interval_days": 1,
+      "ease_factor": 2.35,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 0,
+      "incorrect_count": 1
+    },
+    "mundane": {
+      "word": "mundane",
+      "due_date": "2026-01-15",
+      "interval_days": 2,
+      "ease_factor": 2.5,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "dispassionate": {
+      "word": "dispassionate",
+      "due_date": "2026-01-15",
+      "interval_days": 2,
+      "ease_factor": 2.5,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "brook": {
+      "word": "brook",
+      "due_date": "2026-01-14",
+      "interval_days": 1,
+      "ease_factor": 2.35,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 0,
+      "incorrect_count": 1
+    },
+    "harried": {
+      "word": "harried",
+      "due_date": "2026-01-14",
+      "interval_days": 1,
+      "ease_factor": 2.35,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 0,
+      "incorrect_count": 1
     }
   },
   "stats": {
