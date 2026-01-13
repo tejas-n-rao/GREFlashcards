@@ -37,6 +37,8 @@ streamlit run app/Home.py
 - `COLUMN_OVERRIDES`: per-file per-sheet column mappings when heuristics fail.
 - `ENABLE_OPENAI_ENRICHMENT`: toggle OpenAI enrichment.
 - `OPENAI_MODEL`, `MAX_OPENAI_CALLS_PER_RUN`, `ENRICH_ONLY_WHEN_MISSING`: OpenAI settings.
+- `SET_CHUNK_SIZE`: number of words per fixed set.
+- `SET_SHUFFLE_SEED`: seed for deterministic shuffling.
 
 ## Features
 

@@ -57,3 +57,4 @@ Excel files are binary. Avoid manual, one-off edits when possible; instead, pref
 - Configuration lives in `config.py`, including `EXCEL_FILES`, sheet include/exclude, enrichment toggles, and OpenAI model settings.
 - The app deduplicates words case-insensitively, preserves provenance, and stores the merged dataset in JSON.
 - Enrichment is offline-first (WordNet), with optional OpenAI calls controlled by `ENABLE_OPENAI_ENRICHMENT`.
+- Fixed study sets are generated per source file and for the pooled list using `SET_CHUNK_SIZE` and `SET_SHUFFLE_SEED`.

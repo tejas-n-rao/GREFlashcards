@@ -10,8 +10,8 @@ CSS = """
   --muted: #59636f;
   --accent: #d86b4d;
   --accent-2: #2f6b5d;
-  --paper: #f3efe7;
-  --card: rgba(255, 255, 255, 0.92);
+  --paper: #f6f1e8;
+  --card: rgba(255, 255, 255, 0.94);
 }
 
 html, body, [class*="css"]  {
@@ -20,12 +20,39 @@ html, body, [class*="css"]  {
 }
 
 .stApp {
-  background: radial-gradient(circle at 15% 20%, #f7e9d8 0%, #f3efe7 40%, #e6efe9 100%);
+  background: radial-gradient(circle at 20% 15%, #f7ead8 0%, #f6f1e8 40%, #e7efe9 100%);
 }
 
 section[data-testid="stSidebar"] {
   background: linear-gradient(180deg, #f6efe4 0%, #f0ece4 100%);
   border-right: 1px solid rgba(0,0,0,0.06);
+}
+
+section[data-testid="stSidebar"] .stButton > button {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: #2a2d34;
+  color: #f8f6f2;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.9rem;
+}
+
+section[data-testid="stSidebar"] .stButton > button:hover {
+  background: #1f232a;
+  border-color: rgba(0,0,0,0.12);
+}
+
+.stButton > button {
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: #2a2d34;
+  color: #f8f6f2;
+  padding: 0.5rem 0.9rem;
+}
+
+.stButton > button:hover {
+  background: #1f232a;
 }
 
 .card {

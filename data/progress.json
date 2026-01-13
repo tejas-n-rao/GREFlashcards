@@ -1,0 +1,84 @@
+{
+  "states": {
+    "aberrant": {
+      "word": "aberrant",
+      "due_date": "2026-01-15",
+      "interval_days": 2,
+      "ease_factor": 2.5,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "aberration": {
+      "word": "aberration",
+      "due_date": "2026-01-15",
+      "interval_days": 2,
+      "ease_factor": 2.5,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "abstain": {
+      "word": "abstain",
+      "due_date": "2026-01-15",
+      "interval_days": 2,
+      "ease_factor": 2.5,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "abstruse": {
+      "word": "abstruse",
+      "due_date": "2026-01-15",
+      "interval_days": 2,
+      "ease_factor": 2.5,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "inkling": {
+      "word": "inkling",
+      "due_date": "2026-01-15",
+      "interval_days": 2,
+      "ease_factor": 2.5,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "byzantine": {
+      "word": "byzantine",
+      "due_date": "2026-01-15",
+      "interval_days": 2,
+      "ease_factor": 2.5,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "malingerer": {
+      "word": "malingerer",
+      "due_date": "2026-01-15",
+      "interval_days": 2,
+      "ease_factor": 2.5,
+      "last_review": "2026-01-13",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    }
+  },
+  "stats": {
+    "last_review_date": "2026-01-13"
+  }
+}

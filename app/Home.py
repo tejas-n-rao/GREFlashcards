@@ -39,6 +39,11 @@ with col_b:
     report = st.session_state.report or {}
     st.markdown("### Normalization Report")
     st.json(report)
+    missing_files = report.get("missing_files", [])
+    if missing_files:
+        st.warning("Some Excel files were not found. Check config.py paths.")
+        for path in missing_files:
+            st.code(path)
 
 st.markdown("---")
 

@@ -27,14 +27,49 @@ ensure_state()
 
 st.title("Settings")
 
-set_names = list(st.session_state.sets.keys())
+set_map = st.session_state.sets
+set_names = list(set_map.keys())
+
+def _set_sort_key(name: str) -> tuple[int, int, str]:
+    if name.startswith("Pooled :: Set "):
+        number = int(name.split("Set ")[1])
+        return (3, number, name)
+    if name == "Pooled":
+        return (2, 0, name)
+    if " :: Set " in name:
+        base, _, tail = name.partition(" :: Set ")
+        return (1, int(tail), base)
+    if " :: " in name and "occur" in name.lower():
+        parts = name.split(" :: ")
+        freq = parts[-1]
+        digits = "".join(ch for ch in freq if ch.isdigit())
+        return (0, int(digits) if digits else 99, name)
+    return (0, 0, name)
+
+source_map: dict[str, list[str]] = {}
+for name in set_names:
+    if name == "Pooled" or name.startswith("Pooled ::"):
+        source = "Pooled"
+    elif " :: " in name:
+        source = name.split(" :: ")[0]
+    else:
+        source = name
+    source_map.setdefault(source, []).append(name)
+
+sources = sorted(source_map.keys(), key=lambda s: (0, s) if s != "Pooled" else (1, s))
+source_choice = st.selectbox("Source", options=sources)
+set_names = sorted(source_map[source_choice], key=_set_sort_key)
+
+def _display(name: str) -> str:
+    count = len(set_map[name].word_keys)
+    return f"{name} ({count} words)"
+
 active = st.selectbox(
-    "Active Set",
+    "Set",
     options=set_names,
+    format_func=_display,
     index=set_names.index(st.session_state.active_set)
     if st.session_state.active_set in set_names
-    else set_names.index(DEFAULT_ACTIVE_SET)
-    if DEFAULT_ACTIVE_SET in set_names
     else 0,
 )
 

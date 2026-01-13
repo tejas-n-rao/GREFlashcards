@@ -108,6 +108,7 @@ class NormalizationReport:
     missing_synonyms: int
     source_counts: dict[str, int]
     sheet_counts: dict[str, int]
+    missing_files: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -121,4 +122,5 @@ class NormalizationReport:
             "missing_synonyms": self.missing_synonyms,
             "source_counts": self.source_counts,
             "sheet_counts": self.sheet_counts,
+            "missing_files": self.missing_files,
         }

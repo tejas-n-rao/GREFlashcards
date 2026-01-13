@@ -33,6 +33,47 @@ if not entries:
     st.info("No entries loaded yet. Rebuild the dataset on Home.")
     st.stop()
 
+set_names = list(sets.keys())
+
+def _set_sort_key(name: str) -> tuple[int, int, str]:
+    if name.startswith("Pooled :: Set "):
+        number = int(name.split("Set ")[1])
+        return (3, number, name)
+    if name == "Pooled":
+        return (2, 0, name)
+    if " :: Set " in name:
+        base, _, tail = name.partition(" :: Set ")
+        return (1, int(tail), base)
+    if " :: " in name and "occur" in name.lower():
+        parts = name.split(" :: ")
+        freq = parts[-1]
+        digits = "".join(ch for ch in freq if ch.isdigit())
+        return (0, int(digits) if digits else 99, name)
+    return (0, 0, name)
+
+source_map: dict[str, list[str]] = {}
+for name in set_names:
+    if name == "Pooled" or name.startswith("Pooled ::"):
+        source = "Pooled"
+    elif " :: " in name:
+        source = name.split(" :: ")[0]
+    else:
+        source = name
+    source_map.setdefault(source, []).append(name)
+
+sources = sorted(source_map.keys(), key=lambda s: (0, s) if s != "Pooled" else (1, s))
+source_choice = st.selectbox("Source", options=sources)
+sets_for_source = sorted(source_map[source_choice], key=_set_sort_key)
+
+active_set = st.selectbox(
+    "Set",
+    options=sets_for_source,
+    index=sets_for_source.index(active_set)
+    if active_set in sets_for_source
+    else 0,
+)
+st.session_state.active_set = active_set
+
 word_list = sets[active_set].word_keys if active_set in sets else []
 
 if "study_queue" not in st.session_state:

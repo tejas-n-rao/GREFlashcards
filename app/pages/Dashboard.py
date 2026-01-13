@@ -71,10 +71,23 @@ st.markdown("---")
 
 st.subheader("Set Accuracy")
 set_names = list(sets.keys())
-set_table = []
-for set_name in set_names:
-    words = sets[set_name].word_keys
-    acc = accuracy_for_words(words, st.session_state.progress)
-    set_table.append({"set": set_name, "accuracy": f"{acc:.0%}", "count": len(words)})
+file_sets = [name for name in set_names if " :: " not in name and name != "Pooled"]
+pooled_sets = [name for name in set_names if name.startswith("Pooled ::")]
+chunk_sets = [name for name in set_names if " :: Set " in name and not name.startswith("Pooled")]
 
-st.dataframe(set_table, use_container_width=True)
+def _table(names: list[str]) -> list[dict[str, str]]:
+    rows = []
+    for set_name in names:
+        words = sets[set_name].word_keys
+        acc = accuracy_for_words(words, st.session_state.progress)
+        rows.append({"set": set_name, "accuracy": f"{acc:.0%}", "count": len(words)})
+    return rows
+
+st.markdown("**Per-file Sets**")
+st.dataframe(_table(file_sets), use_container_width=True)
+
+st.markdown("**Per-file Chunks**")
+st.dataframe(_table(chunk_sets), use_container_width=True)
+
+st.markdown("**Pooled Chunks**")
+st.dataframe(_table(pooled_sets), use_container_width=True)

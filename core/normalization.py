@@ -18,6 +18,10 @@ MNEMONIC_HINTS = {"mnemonic", "memory", "hint", "trick"}
 POS_HINTS = {"pos", "part of speech", "part_of_speech"}
 SUBCATEGORY_HINTS = {"set", "group", "band", "level", "frequency", "category", "subcategory"}
 SYNONYM_HINTS = {"synonym", "synonyms"}
+FREQUENCY_PATTERN = re.compile(
+    r"^\s*([1-7])\s*occur[a-z]*\s*(/s)?\s*$",
+    re.IGNORECASE,
+)
 
 
 def _normalize_header(header: Any) -> str:
@@ -78,11 +82,11 @@ def _column_by_fallback(columns: list[Any], index: int) -> str | None:
     return col
 
 
-def _get_sheet_names(excel_path: str) -> list[str]:
-    excel_file = pd.ExcelFile(excel_path)
+def _get_sheet_names(excel_path: str, resolved_path: str) -> list[str]:
+    excel_file = pd.ExcelFile(resolved_path)
     sheet_names = excel_file.sheet_names
-    include = INCLUDE_SHEETS.get(excel_path)
-    exclude = EXCLUDE_SHEETS.get(excel_path, [])
+    include = INCLUDE_SHEETS.get(excel_path) or INCLUDE_SHEETS.get(resolved_path)
+    exclude = EXCLUDE_SHEETS.get(excel_path) or EXCLUDE_SHEETS.get(resolved_path, [])
 
     if include:
         sheet_names = [sheet for sheet in sheet_names if sheet in include]
@@ -116,6 +120,27 @@ def _split_mnemonics(value: str | None) -> list[str]:
     parts = re.split(r"\n|;", value)
     cleaned = [part.strip() for part in parts if part.strip()]
     return cleaned
+
+
+def _frequency_columns(columns: list[Any]) -> list[Any]:
+    matches = []
+    for col in columns:
+        header = _normalize_header(col)
+        if FREQUENCY_PATTERN.match(header):
+            matches.append(col)
+    return matches
+
+
+def _frequency_from_first_row(df: pd.DataFrame) -> list[tuple[Any, str]]:
+    if df.empty:
+        return []
+    first_row = df.iloc[0]
+    matches: list[tuple[Any, str]] = []
+    for col in df.columns:
+        value = _clean_value(first_row.get(col))
+        if value and FREQUENCY_PATTERN.match(value):
+            matches.append((col, value))
+    return matches
 
 
 def _resolve_column_name(columns: list[Any], header: str | None) -> Any | None:
@@ -193,20 +218,68 @@ def normalize_excel_files(excel_files: list[str]) -> tuple[list[WordEntry], Norm
     total_words = 0
     source_counts: Counter[str] = Counter()
     sheet_counts: Counter[str] = Counter()
+    missing_files: list[str] = []
+    repo_root = Path(__file__).resolve().parents[1]
 
     for excel_path in excel_files:
         file_path = Path(excel_path)
+        if not file_path.is_absolute():
+            file_path = (repo_root / file_path).resolve()
         if not file_path.exists():
+            missing_files.append(str(file_path))
             continue
 
-        for sheet in _get_sheet_names(excel_path):
+        for sheet in _get_sheet_names(excel_path, str(file_path)):
             overrides = COLUMN_OVERRIDES.get(excel_path, {}).get(sheet, {})
-            df = pd.read_excel(excel_path, sheet_name=sheet, engine="openpyxl")
+            overrides = overrides or COLUMN_OVERRIDES.get(str(file_path), {}).get(sheet, {})
+            df = pd.read_excel(str(file_path), sheet_name=sheet, engine="openpyxl")
             df = df.dropna(how="all")
             if df.empty:
                 continue
 
             columns = list(df.columns)
+            if file_path.name == "GREVocabPrepSources.xlsx":
+                freq_cols = _frequency_columns(columns)
+                freq_first_row = _frequency_from_first_row(df)
+                if freq_cols or freq_first_row:
+                    if freq_cols:
+                        freq_targets = [(col, _clean_value(col), False) for col in freq_cols]
+                    else:
+                        freq_targets = [(col, label, True) for col, label in freq_first_row]
+
+                    for col, label, skip_first in freq_targets:
+                        subcategory = _clean_value(label)
+                        if not subcategory:
+                            continue
+                        values = df[col].tolist()
+                        if skip_first:
+                            values = values[1:]
+                        for value in values:
+                            word = _clean_value(value)
+                            if not word:
+                                continue
+                            total_rows += 1
+                            total_words += 1
+                            entry = WordEntry(
+                                word=word.strip(),
+                                sources=[
+                                    SourceRef(
+                                        filename=file_path.name,
+                                        sheet=sheet,
+                                        subcategory=subcategory,
+                                    )
+                                ],
+                            )
+                            key = entry.word.strip().lower()
+                            if key in entries_by_word:
+                                entries_by_word[key] = _merge_entries(entries_by_word[key], entry)
+                            else:
+                                entries_by_word[key] = entry
+
+                            source_counts[file_path.name] += 1
+                            sheet_counts[f"{file_path.name}::{sheet}"] += 1
+                    continue
+
             mapping = _detect_columns(columns)
             mapping.update({key: _normalize_header(val) for key, val in overrides.items() if val})
 
@@ -227,7 +300,7 @@ def normalize_excel_files(excel_files: list[str]) -> tuple[list[WordEntry], Norm
                 sheet_counts[f"{file_path.name}::{sheet}"] += 1
 
     entries = list(entries_by_word.values())
-    report = _build_report(entries, total_rows, total_words, source_counts, sheet_counts)
+    report = _build_report(entries, total_rows, total_words, source_counts, sheet_counts, missing_files)
     return entries, report
 
 
@@ -237,6 +310,7 @@ def _build_report(
     total_words: int,
     source_counts: Counter[str],
     sheet_counts: Counter[str],
+    missing_files: list[str],
 ) -> NormalizationReport:
     missing_meaning = sum(1 for entry in entries if not entry.meaning)
     missing_example = sum(1 for entry in entries if not entry.example)
@@ -255,4 +329,5 @@ def _build_report(
         missing_synonyms=missing_synonyms,
         source_counts=dict(source_counts),
         sheet_counts=dict(sheet_counts),
+        missing_files=missing_files,
     )

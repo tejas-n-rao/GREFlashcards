@@ -4,9 +4,9 @@ from pathlib import Path
 
 # Update these absolute paths to your local Excel files.
 EXCEL_FILES = [
-    "/ABS/PATH/file1.xlsx",
-    "/ABS/PATH/file2.xlsx",
-    "/ABS/PATH/file3.xlsx",
+    "VocabList/GREVocabPrepSources.xlsx",
+    "VocabList/Magoosh1000Words.xlsx",
+    "VocabList/VocabMountain.xlsx",
 ]
 
 # Optional include/exclude sheet configuration.
@@ -17,7 +17,9 @@ EXCEL_FILES = [
 # EXCLUDE_SHEETS = {
 #     "/ABS/PATH/file2.xlsx": ["Archive"],
 # }
-INCLUDE_SHEETS: dict[str, list[str]] = {}
+INCLUDE_SHEETS: dict[str, list[str]] = {
+    "VocabList/VocabMountain.xlsx": ["Day 32"],
+}
 EXCLUDE_SHEETS: dict[str, list[str]] = {}
 
 # Manual column mapping per file/sheet if heuristics fail.
@@ -52,3 +54,5 @@ ENRICHMENT_CACHE_PATH = DATA_DIR / "enrichment_cache.json"
 DEFAULT_ACTIVE_SET = "Pooled"
 NEW_CARDS_PER_SESSION = 20
 EXTRA_CARDS_PER_SESSION = 10
+SET_CHUNK_SIZE = 50
+SET_SHUFFLE_SEED = 42
