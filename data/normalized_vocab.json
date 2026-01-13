@@ -1,0 +1,16 @@
+{
+  "entries": [],
+  "report": {
+    "total_rows": 0,
+    "total_words": 0,
+    "deduped_words": 0,
+    "missing_meaning": 0,
+    "missing_example": 0,
+    "missing_pos": 0,
+    "missing_mnemonic": 0,
+    "missing_synonyms": 0,
+    "source_counts": {},
+    "sheet_counts": {}
+  },
+  "generated_at": "2026-01-13"
+}

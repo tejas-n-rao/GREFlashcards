@@ -1,8 +1,14 @@
 from __future__ import annotations
 
 from datetime import date
+import sys
+from pathlib import Path
 
 import streamlit as st
+
+path = Path(__file__).resolve()
+repo_root = path.parents[2] if path.parent.name == "pages" else path.parents[1]
+sys.path.insert(0, str(repo_root))
 
 from app.navigation import render_nav
 from app.state import ensure_review_state, ensure_state, save_progress_state
@@ -64,25 +70,25 @@ if pos_display:
 
 st.markdown("<hr>", unsafe_allow_html=True)
 
-st.markdown("**Meaning**")
+st.markdown("<div class='section-title'>Meaning</div>", unsafe_allow_html=True)
 st.write(entry.meaning or "—")
 
-st.markdown("**Example**")
+st.markdown("<div class='section-title'>Example</div>", unsafe_allow_html=True)
 st.write(entry.example or "—")
 
-st.markdown("**Synonyms**")
+st.markdown("<div class='section-title'>Synonyms</div>", unsafe_allow_html=True)
 if entry.synonyms:
     st.write(", ".join(entry.synonyms[:3]))
 else:
     st.write("—")
 
-st.markdown("**Mnemonics**")
+st.markdown("<div class='section-title'>Mnemonics</div>", unsafe_allow_html=True)
 if entry.mnemonics:
     st.write("; ".join(entry.mnemonics[:2]))
 else:
     st.write("—")
 
-st.markdown("**Source**")
+st.markdown("<div class='section-title'>Source</div>", unsafe_allow_html=True)
 source_lines = []
 for source in entry.sources:
     label = f"{source.filename} / {source.sheet}"

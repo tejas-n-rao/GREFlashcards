@@ -1,6 +1,13 @@
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
 import streamlit as st
+
+path = Path(__file__).resolve()
+repo_root = path.parents[2] if path.parent.name == "pages" else path.parents[1]
+sys.path.insert(0, str(repo_root))
 
 from app.navigation import render_nav
 from app.state import ensure_state, save_progress_state

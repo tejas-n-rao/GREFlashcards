@@ -1,6 +1,6 @@
 # GRE Vocab Studio
 
-Local, offline-first GRE vocabulary flashcards with spaced repetition and optional enrichment.
+Local, offline-first GRE vocabulary flashcards with spaced repetition and optional enrichment. The app ingests multiple Excel files, deduplicates words case-insensitively, preserves provenance, and provides per-source and pooled study sets.
 
 ## Setup
 
@@ -13,7 +13,7 @@ source gre/bin/activate
 2) Install dependencies:
 
 ```bash
-pip install streamlit pandas openpyxl nltk openai
+pip install streamlit pandas openpyxl nltk openai pytest
 ```
 
 3) (Optional) Download WordNet for offline enrichment:
@@ -22,13 +22,29 @@ pip install streamlit pandas openpyxl nltk openai
 python -m nltk.downloader wordnet
 ```
 
-4) Update `config.py` with absolute paths to your Excel files.
+4) Update `config.py` with absolute paths to your Excel files (`EXCEL_FILES`).
 
 ## Run
 
 ```bash
 streamlit run app/Home.py
 ```
+
+## Configuration
+
+- `EXCEL_FILES`: absolute file paths to `.xlsx` vocab sources.
+- `INCLUDE_SHEETS` / `EXCLUDE_SHEETS`: per-file sheet controls.
+- `COLUMN_OVERRIDES`: per-file per-sheet column mappings when heuristics fail.
+- `ENABLE_OPENAI_ENRICHMENT`: toggle OpenAI enrichment.
+- `OPENAI_MODEL`, `MAX_OPENAI_CALLS_PER_RUN`, `ENRICH_ONLY_WHEN_MISSING`: OpenAI settings.
+
+## Features
+
+- Flashcards show: word, meaning, POS, synonyms (up to 3), example, source, mnemonics.
+- Card sets: per file, per sheet, optional subcategory, plus pooled.
+- Spaced repetition: Again / Hard / Good / Easy (SM-2-like scheduling).
+- Dashboard: due counts, accuracy, weak words, search.
+- Word detail editing with optional per-word enrichment refresh.
 
 ## Data Outputs
 

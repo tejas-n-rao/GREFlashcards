@@ -6,59 +6,67 @@ import streamlit as st
 CSS = """
 <style>
 :root {
-  --ink: #1d1f2a;
-  --accent: #ff6f3c;
-  --accent-2: #1f7a8c;
-  --paper: #f8f4ee;
-  --card: rgba(255, 255, 255, 0.9);
-  --muted: #5b617a;
+  --ink: #1a1c1f;
+  --muted: #59636f;
+  --accent: #d86b4d;
+  --accent-2: #2f6b5d;
+  --paper: #f3efe7;
+  --card: rgba(255, 255, 255, 0.92);
 }
 
 html, body, [class*="css"]  {
-  font-family: "Avenir Next", "Gill Sans", "Trebuchet MS", sans-serif;
+  font-family: "Libre Baskerville", "Georgia", serif;
   color: var(--ink);
 }
 
 .stApp {
-  background: radial-gradient(circle at 10% 10%, #ffe8d2 0%, #f8f4ee 35%, #e9f2f6 100%);
+  background: radial-gradient(circle at 15% 20%, #f7e9d8 0%, #f3efe7 40%, #e6efe9 100%);
 }
 
 section[data-testid="stSidebar"] {
-  background: linear-gradient(180deg, #faf0e6 0%, #f5f1ea 100%);
+  background: linear-gradient(180deg, #f6efe4 0%, #f0ece4 100%);
+  border-right: 1px solid rgba(0,0,0,0.06);
 }
 
 .card {
   background: var(--card);
-  border-radius: 18px;
-  padding: 1.5rem;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  border: 1px solid rgba(31, 122, 140, 0.1);
+  border-radius: 20px;
+  padding: 1.75rem;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.06);
 }
 
 .word-title {
-  font-size: 2.1rem;
+  font-size: 2.3rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
 }
 
 .badge {
   display: inline-block;
-  padding: 0.25rem 0.6rem;
+  padding: 0.2rem 0.65rem;
   border-radius: 999px;
-  background: #f1d7c1;
+  background: #efe3d4;
   color: #6d4c41;
   font-size: 0.75rem;
-  margin-right: 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .muted {
   color: var(--muted);
 }
 
+.section-title {
+  font-variant: small-caps;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
 hr {
   border: none;
   border-top: 1px solid rgba(0,0,0,0.08);
-  margin: 1rem 0;
+  margin: 1.2rem 0;
 }
 </style>
 """

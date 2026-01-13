@@ -3,18 +3,22 @@ from __future__ import annotations
 import streamlit as st
 
 
-NAV_ITEMS = [
-    ("Home", "app/Home.py"),
-    ("Study", "app/Study.py"),
-    ("Dashboard", "app/Dashboard.py"),
-    ("Word Detail", "app/Word_Detail.py"),
-    ("Settings", "app/Settings.py"),
-]
+def _nav_buttons() -> None:
+    pages = {
+        "Home": "Home.py",
+        "Study": "pages/Study.py",
+        "Dashboard": "pages/Dashboard.py",
+        "Word Detail": "pages/Word_Detail.py",
+        "Settings": "pages/Settings.py",
+    }
+
+    for label, page in pages.items():
+        if st.button(label, use_container_width=True):
+            st.switch_page(page)
 
 
 def render_nav() -> None:
     with st.sidebar:
         st.header("GRE Vocab Studio")
         st.caption("Aesthetic, offline-first flashcards")
-        for label, page in NAV_ITEMS:
-            st.page_link(page, label=label)
+        _nav_buttons()
