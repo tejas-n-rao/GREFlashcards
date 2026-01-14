@@ -40,8 +40,11 @@ decks: dict[str, list[WordEntry]] = st.session_state.custom_decks
 
 st.markdown("<div class='card'>", unsafe_allow_html=True)
 st.markdown("### Create a New Deck")
-new_deck_name = st.text_input("Deck name", key="new_deck_name")
-if st.button("Create Deck", use_container_width=True):
+with st.form("create_deck_form", clear_on_submit=True):
+    new_deck_name = st.text_input("Deck name")
+    submitted = st.form_submit_button("Create Deck")
+
+if submitted:
     name = new_deck_name.strip()
     if not name:
         st.warning("Enter a deck name to continue.")
@@ -49,7 +52,6 @@ if st.button("Create Deck", use_container_width=True):
         st.warning("That deck already exists.")
     else:
         decks[name] = []
-        st.session_state.new_deck_name = ""
         save_custom_decks_state()
         refresh_sets_state()
         st.success(f"Created deck: {name}")
