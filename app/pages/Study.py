@@ -17,6 +17,8 @@ from app.navigation import render_nav
 from app.state import ensure_review_state, ensure_state, save_progress_state
 from app.ui import apply_theme
 from config import EXTRA_CARDS_PER_SESSION, NEW_CARDS_PER_SESSION
+from core.custom_decks import CUSTOM_SOURCE
+from core.models import WordEntry
 from core.metrics import due_words
 from core.scheduler import schedule_review
 
@@ -42,9 +44,10 @@ st.markdown(
 
 entries = st.session_state.entries
 sets = st.session_state.sets
+custom_decks = st.session_state.custom_decks
 active_set = st.session_state.active_set
 
-if not entries:
+if not entries and not custom_decks:
     st.info("No entries loaded yet. Rebuild the dataset on Home.")
     st.stop()
 
@@ -171,7 +174,14 @@ if not queue:
     st.stop()
 
 current_word = queue[0]
-entry = next((item for item in entries if item.word.lower() == current_word.lower()), None)
+def _resolve_entry(word: str, set_name: str) -> WordEntry | None:
+    if set_name.startswith(f"{CUSTOM_SOURCE} :: "):
+        deck_name = set_name.split(" :: ", 1)[1]
+        deck_entries = custom_decks.get(deck_name, [])
+        return next((item for item in deck_entries if item.word.lower() == word.lower()), None)
+    return next((item for item in entries if item.word.lower() == word.lower()), None)
+
+entry = _resolve_entry(current_word, active_set)
 if entry is None:
     st.warning("Word not found in dataset.")
     st.stop()

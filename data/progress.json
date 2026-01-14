@@ -472,9 +472,75 @@
       "lapse_count": 0,
       "correct_count": 0,
       "incorrect_count": 1
+    },
+    "irresolute": {
+      "word": "irresolute",
+      "due_date": "2026-01-16",
+      "interval_days": 2,
+      "ease_factor": 2.5,
+      "last_review": "2026-01-14",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "provincial": {
+      "word": "provincial",
+      "due_date": "2026-01-16",
+      "interval_days": 2,
+      "ease_factor": 2.5,
+      "last_review": "2026-01-14",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "inviolate": {
+      "word": "inviolate",
+      "due_date": "2026-01-16",
+      "interval_days": 2,
+      "ease_factor": 2.5,
+      "last_review": "2026-01-14",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "noisome": {
+      "word": "noisome",
+      "due_date": "2026-01-16",
+      "interval_days": 2,
+      "ease_factor": 2.5,
+      "last_review": "2026-01-14",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "respite": {
+      "word": "respite",
+      "due_date": "2026-01-16",
+      "interval_days": 2,
+      "ease_factor": 2.5,
+      "last_review": "2026-01-14",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
+    },
+    "enamor": {
+      "word": "enamor",
+      "due_date": "2026-01-16",
+      "interval_days": 2,
+      "ease_factor": 2.5,
+      "last_review": "2026-01-14",
+      "review_count": 1,
+      "lapse_count": 0,
+      "correct_count": 1,
+      "incorrect_count": 0
     }
   },
   "stats": {
-    "last_review_date": "2026-01-13"
+    "last_review_date": "2026-01-14"
   }
 }

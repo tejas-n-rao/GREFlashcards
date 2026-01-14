@@ -6,12 +6,14 @@ from typing import Any
 import streamlit as st
 
 from config import (
+    CUSTOM_DECKS_PATH,
     DEFAULT_ACTIVE_SET,
     EXCEL_FILES,
     PROGRESS_PATH,
 )
+from core.custom_decks import build_custom_sets, load_custom_decks, save_custom_decks
 from core.data_manager import build_normalized_dataset, load_or_build
-from core.models import ReviewState, WordEntry
+from core.models import ReviewState
 from core.persistence import load_progress, save_progress, save_normalized
 from core.models import NormalizationReport
 from config import NORMALIZED_VOCAB_PATH
@@ -19,12 +21,26 @@ from core.scheduler import init_state
 from core.sets import build_sets
 
 
+def _refresh_sets() -> None:
+    base_sets = build_sets(st.session_state.entries)
+    custom_sets = build_custom_sets(st.session_state.custom_decks)
+    merged = dict(base_sets)
+    merged.update(custom_sets)
+    st.session_state.custom_sets = custom_sets
+    st.session_state.sets = merged
+
+
 def ensure_state() -> None:
     if "entries" not in st.session_state:
         entries, report = load_or_build(EXCEL_FILES)
         st.session_state.entries = entries
         st.session_state.report = report
-        st.session_state.sets = build_sets(entries)
+
+    if "custom_decks" not in st.session_state:
+        st.session_state.custom_decks = load_custom_decks(CUSTOM_DECKS_PATH)
+
+    if "sets" not in st.session_state:
+        _refresh_sets()
 
     if "active_set" not in st.session_state:
         st.session_state.active_set = DEFAULT_ACTIVE_SET
@@ -39,7 +55,7 @@ def rebuild_dataset() -> None:
     entries, report = build_normalized_dataset(EXCEL_FILES)
     st.session_state.entries = entries
     st.session_state.report = report
-    st.session_state.sets = build_sets(entries)
+    _refresh_sets()
 
 
 def ensure_review_state(word: str) -> ReviewState:
@@ -52,6 +68,14 @@ def ensure_review_state(word: str) -> ReviewState:
 
 def save_progress_state() -> None:
     save_progress(PROGRESS_PATH, st.session_state.progress, st.session_state.stats)
+
+
+def save_custom_decks_state() -> None:
+    save_custom_decks(CUSTOM_DECKS_PATH, st.session_state.custom_decks)
+
+
+def refresh_sets_state() -> None:
+    _refresh_sets()
 
 
 def update_last_session() -> None:

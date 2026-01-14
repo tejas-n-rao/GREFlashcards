@@ -11,9 +11,8 @@ sys.path.insert(0, str(repo_root))
 
 from config import EXCEL_FILES
 from core.data_manager import enrich_entries
-from core.sets import build_sets
 from app.navigation import render_nav
-from app.state import ensure_state, rebuild_dataset, save_normalized_state
+from app.state import ensure_state, rebuild_dataset, refresh_sets_state, save_normalized_state
 from app.ui import apply_theme
 
 
@@ -105,7 +104,7 @@ with col_d:
             enrich_only_when_missing=st.session_state.get("enrich_only_when_missing"),
             max_calls_per_run=st.session_state.get("max_calls_per_run"),
         )
-        st.session_state.sets = build_sets(st.session_state.entries)
+        refresh_sets_state()
         save_normalized_state()
         st.success("Enrichment complete.")
 st.markdown("</div>", unsafe_allow_html=True)

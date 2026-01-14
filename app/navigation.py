@@ -7,6 +7,7 @@ def _nav_buttons() -> None:
     pages = {
         "Home": "Home.py",
         "Study": "pages/Study.py",
+        "Custom Decks": "pages/Custom_Decks.py",
         "Dashboard": "pages/Dashboard.py",
         "Word Detail": "pages/Word_Detail.py",
         "Settings": "pages/Settings.py",

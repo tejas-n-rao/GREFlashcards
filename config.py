@@ -49,6 +49,7 @@ DATA_DIR = Path("data")
 NORMALIZED_VOCAB_PATH = DATA_DIR / "normalized_vocab.json"
 PROGRESS_PATH = DATA_DIR / "progress.json"
 ENRICHMENT_CACHE_PATH = DATA_DIR / "enrichment_cache.json"
+CUSTOM_DECKS_PATH = DATA_DIR / "custom_decks.json"
 
 # App defaults
 DEFAULT_ACTIVE_SET = "Pooled"
