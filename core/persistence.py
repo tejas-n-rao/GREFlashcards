@@ -5,7 +5,8 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-from core.models import NormalizationReport, ReviewState, WordEntry
+from core.deck_progress import DeckSessionSettings
+from core.models import DeckReviewState, NormalizationReport, ReviewState, WordEntry
 
 
 def ensure_data_dir(path: Path) -> None:
@@ -50,6 +51,43 @@ def load_progress(path: Path) -> tuple[dict[str, ReviewState], dict[str, Any]]:
     }
     stats = payload.get("stats", {})
     return states, stats
+
+
+def save_deck_progress(
+    path: Path,
+    decks: dict[str, dict[str, DeckReviewState]],
+    settings: dict[str, DeckSessionSettings],
+) -> None:
+    ensure_data_dir(path.parent)
+    payload = {
+        "decks": {
+            deck_id: {
+                "settings": settings.get(deck_id, DeckSessionSettings()).to_dict(),
+                "words": {word_id: state.to_dict() for word_id, state in words.items()},
+            }
+            for deck_id, words in decks.items()
+        }
+    }
+    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
+def load_deck_progress(
+    path: Path,
+) -> tuple[dict[str, dict[str, DeckReviewState]], dict[str, DeckSessionSettings]]:
+    if not path.exists():
+        return {}, {}
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    deck_states: dict[str, dict[str, DeckReviewState]] = {}
+    deck_settings: dict[str, DeckSessionSettings] = {}
+    for deck_id, deck_payload in payload.get("decks", {}).items():
+        words = {
+            word_id: DeckReviewState.from_dict(state)
+            for word_id, state in deck_payload.get("words", {}).items()
+        }
+        deck_states[deck_id] = words
+        settings_payload = deck_payload.get("settings", {})
+        deck_settings[deck_id] = DeckSessionSettings.from_dict(settings_payload)
+    return deck_states, deck_settings
 
 
 def load_cache(path: Path) -> dict[str, Any]:

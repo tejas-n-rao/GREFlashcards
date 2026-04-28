@@ -6,7 +6,9 @@ import streamlit as st
 def _nav_buttons() -> None:
     pages = {
         "Home": "Home.py",
+        "Decks": "pages/Decks.py",
         "Study": "pages/Study.py",
+        "Games": "pages/Games.py",
         "Custom Decks": "pages/Custom_Decks.py",
         "Dashboard": "pages/Dashboard.py",
         "Word Detail": "pages/Word_Detail.py",

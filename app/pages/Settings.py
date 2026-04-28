@@ -14,6 +14,10 @@ from app.state import ensure_state, save_progress_state
 from app.ui import apply_theme
 from config import (
     DEFAULT_ACTIVE_SET,
+    DECK_MAX_REVIEW_PER_SESSION,
+    DECK_MIX_NEW_AND_REVIEW,
+    DECK_NEW_WORDS_PER_SESSION,
+    DECK_OPEN_MODE,
     ENABLE_OPENAI_ENRICHMENT,
     ENRICH_ONLY_WHEN_MISSING,
     MAX_OPENAI_CALLS_PER_RUN,
@@ -87,6 +91,38 @@ active = st.selectbox(
 )
 
 st.session_state.active_set = active
+st.markdown("</div>", unsafe_allow_html=True)
+
+st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
+
+st.markdown("<div class='card'>", unsafe_allow_html=True)
+st.subheader("Deck Defaults")
+deck_stats = st.session_state.stats
+deck_stats["deck_new_words_per_session"] = st.number_input(
+    "New words per deck session",
+    min_value=0,
+    max_value=200,
+    value=int(deck_stats.get("deck_new_words_per_session", DECK_NEW_WORDS_PER_SESSION)),
+    step=5,
+)
+deck_stats["deck_max_review_per_session"] = st.number_input(
+    "Max reviews per deck session",
+    min_value=0,
+    max_value=500,
+    value=int(deck_stats.get("deck_max_review_per_session", DECK_MAX_REVIEW_PER_SESSION)),
+    step=5,
+)
+deck_stats["deck_mix_new_and_review"] = st.checkbox(
+    "Mix new and review cards",
+    value=bool(deck_stats.get("deck_mix_new_and_review", DECK_MIX_NEW_AND_REVIEW)),
+)
+deck_stats["deck_open_mode"] = st.selectbox(
+    "Deck access mode",
+    options=["open", "gated"],
+    index=0
+    if deck_stats.get("deck_open_mode", DECK_OPEN_MODE) == "open"
+    else 1,
+)
 st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div class='divider'></div>", unsafe_allow_html=True)

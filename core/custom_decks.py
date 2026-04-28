@@ -48,6 +48,7 @@ def load_custom_decks(path: Path) -> dict[str, list[WordEntry]]:
                     example=card.get("example"),
                     pos=card.get("pos"),
                     synonyms=list(card.get("synonyms", [])),
+                    antonyms=list(card.get("antonyms", [])),
                     mnemonics=list(card.get("mnemonics", [])),
                     tags=list(card.get("tags", [])),
                     sources=[SourceRef(filename=CUSTOM_SOURCE, sheet=name)],
@@ -70,6 +71,7 @@ def save_custom_decks(path: Path, decks: dict[str, list[WordEntry]]) -> None:
                         "example": card.example,
                         "pos": card.pos,
                         "synonyms": card.synonyms,
+                        "antonyms": card.antonyms,
                         "mnemonics": card.mnemonics,
                         "tags": card.tags,
                     }

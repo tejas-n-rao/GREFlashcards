@@ -8,13 +8,14 @@ import streamlit as st
 from config import (
     CUSTOM_DECKS_PATH,
     DEFAULT_ACTIVE_SET,
+    DECK_PROGRESS_PATH,
     EXCEL_FILES,
     PROGRESS_PATH,
 )
 from core.custom_decks import build_custom_sets, load_custom_decks, save_custom_decks
 from core.data_manager import build_normalized_dataset, load_or_build
 from core.models import ReviewState
-from core.persistence import load_progress, save_progress, save_normalized
+from core.persistence import load_deck_progress, load_progress, save_deck_progress, save_progress, save_normalized
 from core.models import NormalizationReport
 from config import NORMALIZED_VOCAB_PATH
 from core.scheduler import init_state
@@ -50,6 +51,11 @@ def ensure_state() -> None:
         st.session_state.progress = states
         st.session_state.stats = stats
 
+    if "deck_progress" not in st.session_state:
+        deck_states, deck_settings = load_deck_progress(DECK_PROGRESS_PATH)
+        st.session_state.deck_progress = deck_states
+        st.session_state.deck_settings = deck_settings
+
 
 def rebuild_dataset() -> None:
     entries, report = build_normalized_dataset(EXCEL_FILES)
@@ -68,6 +74,14 @@ def ensure_review_state(word: str) -> ReviewState:
 
 def save_progress_state() -> None:
     save_progress(PROGRESS_PATH, st.session_state.progress, st.session_state.stats)
+
+
+def save_deck_progress_state() -> None:
+    save_deck_progress(
+        DECK_PROGRESS_PATH,
+        st.session_state.deck_progress,
+        st.session_state.deck_settings,
+    )
 
 
 def save_custom_decks_state() -> None:

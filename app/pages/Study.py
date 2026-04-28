@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
 import html
 import random
 import sys
@@ -14,10 +14,11 @@ repo_root = path.parents[2] if path.parent.name == "pages" else path.parents[1]
 sys.path.insert(0, str(repo_root))
 
 from app.navigation import render_nav
-from app.state import ensure_review_state, ensure_state, save_progress_state
+from app.state import ensure_review_state, ensure_state, save_deck_progress_state, save_progress_state
 from app.ui import apply_theme
 from config import EXTRA_CARDS_PER_SESSION, NEW_CARDS_PER_SESSION
 from core.custom_decks import CUSTOM_SOURCE
+from core.deck_progress import apply_outcome, init_deck_state
 from core.models import WordEntry
 from core.metrics import due_words
 from core.scheduler import schedule_review
@@ -46,6 +47,113 @@ entries = st.session_state.entries
 sets = st.session_state.sets
 custom_decks = st.session_state.custom_decks
 active_set = st.session_state.active_set
+
+def _resolve_entry(word: str, set_name: str | None) -> WordEntry | None:
+    if set_name:
+        deck_entries = custom_decks.get(set_name, [])
+        if deck_entries:
+            return next((item for item in deck_entries if item.word.lower() == word.lower()), None)
+    if set_name and set_name.startswith(f"{CUSTOM_SOURCE} :: "):
+        deck_name = set_name.split(" :: ", 1)[1]
+        deck_entries = custom_decks.get(deck_name, [])
+        return next((item for item in deck_entries if item.word.lower() == word.lower()), None)
+    return next((item for item in entries if item.word.lower() == word.lower()), None)
+
+deck_session = st.session_state.get("deck_session")
+if deck_session:
+    deck_id = deck_session.get("deckId")
+    deck_queue = st.session_state.get("deck_queue") or list(deck_session.get("wordIds", []))
+    st.session_state.deck_queue = deck_queue
+
+    if not deck_queue:
+        st.info("Deck session complete.")
+        if st.button("Back to Decks", use_container_width=True):
+            st.session_state.deck_session = None
+            st.session_state.deck_queue = []
+            st.switch_page("pages/Decks.py")
+        st.stop()
+
+    st.markdown(
+        f"<div class='card'><strong>Deck Session:</strong> {html.escape(str(deck_id))}</div>",
+        unsafe_allow_html=True,
+    )
+    st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
+
+    current_word = deck_queue[0]
+    entry = _resolve_entry(current_word, str(deck_id) if deck_id else None)
+    if entry is None:
+        st.warning("Word not found in dataset.")
+        st.stop()
+
+    st.markdown("<div class='card flashcard'>", unsafe_allow_html=True)
+    st.markdown(f"<div class='word-title'>{html.escape(entry.word)}</div>", unsafe_allow_html=True)
+
+    pos_display = entry.pos or ""
+    if pos_display:
+        st.markdown(f"<span class='badge'>{html.escape(pos_display)}</span>", unsafe_allow_html=True)
+
+    st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
+
+    source_lines = []
+    for source in entry.sources:
+        label = f"{source.filename} / {source.sheet}"
+        if source.subcategory:
+            label += f" / {source.subcategory}"
+        source_lines.append(label)
+
+    def _flash_item(title: str, body: str) -> str:
+        safe_body = html.escape(body) if body else "—"
+        return (
+            "<div class='flash-item'>"
+            f"<div class='section-title'>{html.escape(title)}</div>"
+            f"<p>{safe_body}</p>"
+            "</div>"
+        )
+
+    flash_html = "".join(
+        [
+            _flash_item("Meaning", entry.meaning or ""),
+            _flash_item("Example", entry.example or ""),
+            _flash_item("Synonyms", ", ".join(entry.synonyms[:3]) if entry.synonyms else ""),
+            _flash_item("Mnemonics", "; ".join(entry.mnemonics[:2]) if entry.mnemonics else ""),
+        ]
+    )
+    st.markdown(f"<div class='flash-grid'>{flash_html}</div>", unsafe_allow_html=True)
+    source_note = html.escape("; ".join(source_lines) if source_lines else "—")
+    st.markdown(
+        f"<div class='flash-note'><span class='section-title'>Source</span> {source_note}</div>",
+        unsafe_allow_html=True,
+    )
+
+    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
+
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
+    col1, col2, col3, col4 = st.columns(4)
+
+    rating = None
+    if col1.button("Again", use_container_width=True):
+        rating = "again"
+    if col2.button("Hard", use_container_width=True):
+        rating = "hard"
+    if col3.button("Good", use_container_width=True):
+        rating = "good"
+    if col4.button("Easy", use_container_width=True):
+        rating = "easy"
+
+    if rating:
+        deck_states = st.session_state.deck_progress.setdefault(str(deck_id), {})
+        word_key = current_word.lower()
+        state = deck_states.get(word_key) or init_deck_state(word_key)
+        deck_states[word_key] = apply_outcome(state, rating, datetime.now())
+        st.session_state.deck_queue = deck_queue[1:]
+        st.session_state.setdefault("deck_results", []).append(
+            {"wordId": word_key, "outcome": rating, "timestamp": datetime.now().isoformat()}
+        )
+        save_deck_progress_state()
+        st.rerun()
+    st.markdown("</div>", unsafe_allow_html=True)
+    st.stop()
 
 if not entries and not custom_decks:
     st.info("No entries loaded yet. Rebuild the dataset on Home.")
@@ -174,12 +282,6 @@ if not queue:
     st.stop()
 
 current_word = queue[0]
-def _resolve_entry(word: str, set_name: str) -> WordEntry | None:
-    if set_name.startswith(f"{CUSTOM_SOURCE} :: "):
-        deck_name = set_name.split(" :: ", 1)[1]
-        deck_entries = custom_decks.get(deck_name, [])
-        return next((item for item in deck_entries if item.word.lower() == word.lower()), None)
-    return next((item for item in entries if item.word.lower() == word.lower()), None)
 
 entry = _resolve_entry(current_word, active_set)
 if entry is None:
